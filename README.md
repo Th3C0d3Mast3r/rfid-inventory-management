@@ -29,6 +29,7 @@ The below is the connection that is done on the ESP32 Espressif Board, connected
 
 And, for the code, used in the ESP32-check out:-
 https://pastebin.com/aGmHFaph
+
 ---
 
 ## Features
