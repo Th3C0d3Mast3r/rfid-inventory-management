@@ -1,18 +1,24 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAuth } from "@/context/auth-context"
 import { useRouter } from "next/navigation"
 
 export function LoginForm() {
-  const [email, setEmail] = useState("")
+  const [emailId, setEmailId] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn, user } = useAuth()
   const router = useRouter()
+
+  // Redirect automatically if user is already logged in
+  useEffect(() => {
+    if (user) {
+      console.log(`[LOGGED IN] ${user}`);
+      router.push("/dashboard")
+    }
+  }, [user, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,8 +26,8 @@ export function LoginForm() {
     setLoading(true)
 
     try {
-      await signIn(email, password)
-      router.push("/dashboard")
+      await signIn(emailId, password)
+      // no need to call router.push here, useEffect will handle it
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed")
     } finally {
@@ -32,14 +38,14 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">
+        <label htmlFor="emailId" className="block text-sm font-medium text-foreground mb-1">
           Email
         </label>
         <input
-          id="email"
+          id="emailId"
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={emailId}
+          onChange={(e) => setEmailId(e.target.value)}
           placeholder="you@example.com"
           className="w-full px-3 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           required

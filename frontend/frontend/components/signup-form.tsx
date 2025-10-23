@@ -1,6 +1,5 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
 import { useAuth } from "@/context/auth-context"
 import { useRouter } from "next/navigation"
@@ -27,10 +26,11 @@ export function SignUpForm() {
 
     setLoading(true)
     try {
-      // send full object to signUp function
+      console.log("Form data before signup:", { name, emailId, password, role })
       await signUp({ name, emailId, password, role })
       router.push(role === "ADMIN" ? "/admin" : "/dashboard")
     } catch (err) {
+      console.error("Signup error caught in form:", err)
       setError(err instanceof Error ? err.message : "Sign up failed")
     } finally {
       setLoading(false)

@@ -5,28 +5,28 @@ import { useTheme } from "@/context/theme-context"
 import { useRouter } from "next/navigation"
 import { Moon, Sun, LogOut } from "lucide-react"
 
-export function Header({ isAdmin = false }: { isAdmin?: boolean }) {
-  const { user, admin, signOut, adminSignOut } = useAuth()
+export function Header() {
+  const { user, signOut } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const router = useRouter()
 
   const handleSignOut = async () => {
-    if (isAdmin) {
-      await adminSignOut()
-    } else {
+    try {
       await signOut()
+      router.push("/")
+    } catch (error) {
+      console.error("Error signing out:", error)
     }
-    router.push("/")
   }
 
-  const displayName = isAdmin ? admin?.username : user?.email
+  const displayName = user?.emailId || user?.emailId || "User"
 
   return (
     <header className="border-b border-border bg-card">
       <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-foreground">
-            IoT Inventory {isAdmin && <span className="text-sm text-primary ml-2">(Admin)</span>}
+            IoT Inventory
           </h1>
           <p className="text-sm text-muted-foreground">{displayName}</p>
         </div>

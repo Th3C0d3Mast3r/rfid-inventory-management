@@ -2,25 +2,19 @@ import { type NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json()
+    const { name, emailId, password, role } = await request.json()
 
-    // Validation
-    if (!email || !password) {
-      return NextResponse.json({ error: "Email and password required" }, { status: 400 })
-    }
+    // call the Express backend
+    const res = await fetch("http://localhost:7500/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, emailId, password, role }),
+    })
 
-    if (password.length < 6) {
-      return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 })
-    }
-
-    // Dummy user creation - in real backend, hash password and save to DB
-    const user = {
-      id: `user_${Date.now()}`,
-      email,
-    }
-
-    return NextResponse.json({ user }, { status: 201 })
+    const data = await res.json()
+    return NextResponse.json(data, { status: res.status })
   } catch (error) {
+    console.error("Signup error:", error)
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -1,94 +1,93 @@
-"use client"
+"use client";
 
-import { useAuth } from "@/context/auth-context"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
-import { useInventory } from "@/hooks/use-inventory"
-import { Header } from "@/components/header"
-import { ScanInput } from "@/components/scan-input"
-import { ItemModal } from "@/components/item-modal"
-import { ActionModal } from "@/components/action-modal"
-import { InventoryTable } from "@/components/inventory-table"
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useInventory } from "@/hooks/use-inventory";
+import { Header } from "@/components/header";
+import { ScanInput } from "@/components/scan-input";
+import { ItemModal } from "@/components/item-modal";
+import { ActionModal } from "@/components/action-modal";
+import { InventoryTable } from "@/components/inventory-table";
+import AdminStaffTable from "@/components/adminStaffTable";
 
 export default function Dashboard() {
-  const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
-  const { items, loading, fetchItems, addItem, updateItem, deleteItem } = useInventory()
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const { items, loading, fetchItems, addItem, updateItem, deleteItem } = useInventory();
 
-  const [scannedRfid, setScannedRfid] = useState<string | null>(null)
-  const [isItemModalOpen, setIsItemModalOpen] = useState(false)
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<{ rfid: string; name: string } | null>(null)
+  const [scannedRfid, setScannedRfid] = useState<string | null>(null);
+  const [isItemModalOpen, setIsItemModalOpen] = useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<{ rfid: string; name: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/")
+      router.push("/");
     }
-  }, [user, authLoading, router])
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     if (user) {
-      fetchItems()
+      fetchItems();
     }
-  }, [user, fetchItems])
+  }, [user, fetchItems]);
 
   const handleScan = (rfid: string) => {
-    const existingItem = items.find((item) => item.rfid === rfid)
+    const existingItem = items.find((item) => item.rfid === rfid);
 
     if (existingItem) {
-      // Item already exists, show action modal for STOCK TAKE or STOCK CLEAR
-      setSelectedItem({ rfid: existingItem.rfid, name: existingItem.name })
-      setIsActionModalOpen(true)
+      setSelectedItem({ rfid: existingItem.rfid, name: existingItem.name });
+      setIsActionModalOpen(true);
     } else {
-      // New item, open modal to assign name
-      setScannedRfid(rfid)
-      setIsItemModalOpen(true)
+      setScannedRfid(rfid);
+      setIsItemModalOpen(true);
     }
-  }
+  };
 
   const handleAddItem = async (name: string) => {
     if (scannedRfid) {
-      await addItem(scannedRfid, name)
-      setIsItemModalOpen(false)
-      setScannedRfid(null)
+      await addItem(scannedRfid, name);
+      setIsItemModalOpen(false);
+      setScannedRfid(null);
     }
-  }
+  };
 
   const handleStockTake = () => {
     if (selectedItem) {
-      const item = items.find((i) => i.rfid === selectedItem.rfid)
+      const item = items.find((i) => i.rfid === selectedItem.rfid);
       if (item) {
-        updateItem(selectedItem.rfid, { quantity: item.quantity + 1 })
+        updateItem(selectedItem.rfid, { quantity: item.quantity + 1 });
       }
-      setIsActionModalOpen(false)
-      setSelectedItem(null)
+      setIsActionModalOpen(false);
+      setSelectedItem(null);
     }
-  }
+  };
 
   const handleStockClear = () => {
     if (selectedItem) {
-      const item = items.find((i) => i.rfid === selectedItem.rfid)
+      const item = items.find((i) => i.rfid === selectedItem.rfid);
       if (item && item.quantity > 0) {
-        updateItem(selectedItem.rfid, { quantity: item.quantity - 1 })
+        updateItem(selectedItem.rfid, { quantity: item.quantity - 1 });
       }
-      setIsActionModalOpen(false)
-      setSelectedItem(null)
+      setIsActionModalOpen(false);
+      setSelectedItem(null);
     }
-  }
+  };
 
   const handleIncrement = (rfid: string) => {
-    const item = items.find((i) => i.rfid === rfid)
+    const item = items.find((i) => i.rfid === rfid);
     if (item) {
-      updateItem(rfid, { quantity: item.quantity + 1 })
+      updateItem(rfid, { quantity: item.quantity + 1 });
     }
-  }
+  };
 
   const handleDecrement = (rfid: string) => {
-    const item = items.find((i) => i.rfid === rfid)
+    const item = items.find((i) => i.rfid === rfid);
     if (item && item.quantity > 0) {
-      updateItem(rfid, { quantity: item.quantity - 1 })
+      updateItem(rfid, { quantity: item.quantity - 1 });
     }
-  }
+  };
 
   if (authLoading) {
     return (
@@ -98,7 +97,7 @@ export default function Dashboard() {
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -128,6 +127,14 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* Admin Staff Table */}
+              {user?.role === "ADMIN" && <AdminStaffTable user={{
+                id: user._id,
+                name: user.name,
+                emailId: user.emailId,
+                role: user.role
+              }} />}
             </div>
           </div>
 
@@ -147,20 +154,20 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Item Modal - for assigning name to new RFID */}
+      {/* Item Modal */}
       {isItemModalOpen && scannedRfid && (
         <ItemModal
           rfid={scannedRfid}
           onSubmit={handleAddItem}
           onClose={() => {
-            setIsItemModalOpen(false)
-            setScannedRfid(null)
+            setIsItemModalOpen(false);
+            setScannedRfid(null);
           }}
           loading={loading}
         />
       )}
 
-      {/* Action Modal - for existing items (STOCK TAKE / STOCK CLEAR) */}
+      {/* Action Modal */}
       {isActionModalOpen && selectedItem && (
         <ActionModal
           rfid={selectedItem.rfid}
@@ -168,12 +175,12 @@ export default function Dashboard() {
           onStockTake={handleStockTake}
           onStockClear={handleStockClear}
           onClose={() => {
-            setIsActionModalOpen(false)
-            setSelectedItem(null)
+            setIsActionModalOpen(false);
+            setSelectedItem(null);
           }}
           loading={loading}
         />
       )}
     </div>
-  )
+  );
 }

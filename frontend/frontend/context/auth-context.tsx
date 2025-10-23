@@ -1,143 +1,104 @@
 "use client"
 
-import type React from "react"
-
 import { createContext, useContext, useEffect, useState } from "react"
 
 interface User {
-  id: string
-  email: string
-}
-
-interface AdminUser {
-  id: string
-  username: string
-  role: "admin"
+  _id: string
+  name: string
+  emailId: string
+  role: string
 }
 
 interface AuthContextType {
   user: User | null
-  admin: AdminUser | null
   loading: boolean
-  signUp: (email: string, password: string) => Promise<void>
-  signIn: (email: string, password: string) => Promise<void>
+  signUp: (data: { name: string; emailId: string; password: string; role: string }) => Promise<void>
+  signIn: (emailId: string, password: string) => Promise<User>
   signOut: () => Promise<void>
-  adminSignIn: (username: string, password: string) => Promise<void>
-  adminSignOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [admin, setAdmin] = useState<AdminUser | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("auth_user")
-    const storedAdmin = localStorage.getItem("auth_admin")
-
     if (storedUser) {
       try {
         setUser(JSON.parse(storedUser))
-      } catch (e) {
+      } catch {
         localStorage.removeItem("auth_user")
       }
     }
-
-    if (storedAdmin) {
-      try {
-        setAdmin(JSON.parse(storedAdmin))
-      } catch (e) {
-        localStorage.removeItem("auth_admin")
-      }
-    }
-
     setLoading(false)
   }, [])
 
-  const signUp = async (email: string, password: string) => {
-    try {
-      const response = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      })
+  const signUp = async ({ name, emailId, password, role }: { name: string; emailId: string; password: string; role: string }) => {
+  try {
+    const response = await fetch("http://localhost:7500/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, emailId, password, role }),
+    });
 
-      if (!response.ok) {
-        throw new Error("Sign up failed")
-      }
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Sign up failed");
 
-      const data = await response.json()
-      setUser(data.user)
-      localStorage.setItem("auth_user", JSON.stringify(data.user))
-    } catch (error) {
-      throw error
-    }
+    // ✅ Your backend sends "employee", not "user"
+    const userData = data.employee;
+    setUser(userData);
+    localStorage.setItem("auth_user", JSON.stringify(userData));
+  } catch (error) {
+    console.error("SignUp error:", error);
+    throw error;
   }
+};
 
-  const signIn = async (email: string, password: string) => {
-    try {
-      const response = await fetch("/api/auth/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      })
+const signIn = async (emailId: string, password: string): Promise<User> => {
+  try {
+    const response = await fetch("http://localhost:7500/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ emailId, password }),
+    });
 
-      if (!response.ok) {
-        throw new Error("Sign in failed")
-      }
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Sign in failed");
 
-      const data = await response.json()
-      setUser(data.user)
-      localStorage.setItem("auth_user", JSON.stringify(data.user))
-    } catch (error) {
-      throw error
-    }
+    // ✅ Map backend employee data correctly
+    const userData: User = {
+      _id: data.employee._id,
+      name: data.employee.name,
+      emailId: data.employee.emailId,
+      role: data.employee.role,
+    };
+
+    setUser(userData);
+    localStorage.setItem("auth_user", JSON.stringify(userData));
+
+    return userData;
+  } catch (error) {
+    console.error("SignIn error:", error);
+    throw error;
   }
+};
+
 
   const signOut = async () => {
     try {
-      await fetch("/api/auth/signout", { method: "POST" })
+      await fetch("http://localhost:7500/logout", { method: "POST" })
       setUser(null)
       localStorage.removeItem("auth_user")
     } catch (error) {
-      throw error
-    }
-  }
-
-  const adminSignIn = async (username: string, password: string) => {
-    try {
-      const response = await fetch("/api/auth/admin/signin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Admin sign in failed")
-      }
-
-      const data = await response.json()
-      setAdmin(data.admin)
-      localStorage.setItem("auth_admin", JSON.stringify(data.admin))
-    } catch (error) {
-      throw error
-    }
-  }
-
-  const adminSignOut = async () => {
-    try {
-      await fetch("/api/auth/admin/signout", { method: "POST" })
-      setAdmin(null)
-      localStorage.removeItem("auth_admin")
-    } catch (error) {
+      console.error("SignOut error:", error)
       throw error
     }
   }
 
   return (
-    <AuthContext.Provider value={{ user, admin, loading, signUp, signIn, signOut, adminSignIn, adminSignOut }}>
+    <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
@@ -145,8 +106,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider")
-  }
+  if (!context) throw new Error("useAuth must be used within AuthProvider")
   return context
 }
