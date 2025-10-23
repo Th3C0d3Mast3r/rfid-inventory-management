@@ -22,6 +22,13 @@ Key features:
 | Real-time | WebSocket / REST API (IoT device integration) |
 | State Management | React hooks (`useInventory`, `useAuth`) |
 
+
+## Hardware Configuration
+The below is the connection that is done on the ESP32 Espressif Board, connected to RFID RC522 Reader
+![image of hardware connection](./images/Hardware%20Configuration.png)
+
+And, for the code, used in the ESP32-check out:-
+https://pastebin.com/aGmHFaph
 ---
 
 ## Features
