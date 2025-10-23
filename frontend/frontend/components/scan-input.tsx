@@ -1,41 +1,35 @@
 "use client"
+import { useEffect, useState } from "react"
 
-import type React from "react"
+export function ScanInput({ onScan, disabled }: { onScan: (rfid: string) => void; disabled?: boolean }) {
+  const [rfid, setRfid] = useState("")
 
-import { useState } from "react"
+  // Poll the backend every 500ms for new scan
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/scan")
+        const data = await res.json()
+        if (data.uid && data.uid !== rfid) {
+          setRfid(data.uid)
+          onScan(data.uid) // trigger normal scan flow
+        }
+      } catch (err) {
+        console.error("Failed to poll scanned UID:", err)
+      }
+    }, 500)
 
-interface ScanInputProps {
-  onScan: (rfid: string) => void
-  disabled?: boolean
-}
-
-export function ScanInput({ onScan, disabled }: ScanInputProps) {
-  const [scannedRfid, setScannedRfid] = useState("")
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && scannedRfid.trim()) {
-      onScan(scannedRfid.trim())
-      setScannedRfid("")
-    }
-  }
+    return () => clearInterval(interval)
+  }, [rfid, onScan])
 
   return (
-    <div className="space-y-2">
-      <label htmlFor="scan" className="block text-sm font-medium text-foreground">
-        Scan Item RFID
-      </label>
-      <input
-        id="scan"
-        type="text"
-        value={scannedRfid}
-        onChange={(e) => setScannedRfid(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Scan RFID tag..."
-        disabled={disabled}
-        className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
-        autoFocus
-      />
-      <p className="text-xs text-muted-foreground">Press Enter to scan</p>
-    </div>
+    <input
+      type="text"
+      value={rfid}
+      disabled={disabled}
+      placeholder="Scan RFID Tag"
+      className="w-full border rounded p-2"
+      onChange={(e) => setRfid(e.target.value)}
+    />
   )
 }
