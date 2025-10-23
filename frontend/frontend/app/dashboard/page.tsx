@@ -7,7 +7,7 @@ import { useInventory } from "@/hooks/use-inventory";
 import { Header } from "@/components/header";
 import { ScanInput } from "@/components/scan-input";
 import { ItemModal } from "@/components/item-modal";
-import { ActionModal } from "@/components/action-modal";
+// import { ActionModal } from "@/components/action-modal"; // NOT NEEDED ANYMORE
 import { InventoryTable } from "@/components/inventory-table";
 import AdminStaffTable from "@/components/adminStaffTable";
 
@@ -18,74 +18,68 @@ export default function Dashboard() {
 
   const [scannedRfid, setScannedRfid] = useState<string | null>(null);
   const [isItemModalOpen, setIsItemModalOpen] = useState(false);
-  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<{ rfid: string; name: string } | null>(null);
+  // const [isActionModalOpen, setIsActionModalOpen] = useState(false); // NOT NEEDED
+  // const [selectedItem, setSelectedItem] = useState<{ rfid: string; name: string } | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/");
+      router.push("/"); // redirect if not logged in
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user) {
-      fetchItems();
-    }
+    if (user) fetchItems();
   }, [user, fetchItems]);
 
+  // SCAN HANDLER
   const handleScan = (rfid: string) => {
     const existingItem = items.find((item) => item.rfid === rfid);
 
     if (existingItem) {
-      setSelectedItem({ rfid: existingItem.rfid, name: existingItem.name });
-      setIsActionModalOpen(true);
+      // ASK CONFIRMATION TO DELETE
+      const confirmDelete = window.confirm(`Do you wish to REMOVE itemId ${rfid}?`);
+      if (confirmDelete) {
+        deleteItem(rfid); // DELETE FROM DB
+      }
     } else {
       setScannedRfid(rfid);
-      setIsItemModalOpen(true);
+      setIsItemModalOpen(true); // ADD FLOW
     }
   };
 
+  // ADD ITEM
   const handleAddItem = async (name: string) => {
-    if (scannedRfid) {
-      await addItem(scannedRfid, name);
+    if (!scannedRfid) return console.error("Cannot add item: scannedRfid missing");
+    if (!user?.emailId) return console.error("Cannot add item: user email not loaded yet");
+
+    const itemName = name;
+    const itemId = scannedRfid;
+    const emailId = user.emailId; // pass emailId to hook
+
+    try {
+      await addItem(itemName, itemId, emailId); // Uses existing hook
+    } catch (err) {
+      console.error("Add Item Failed:", err);
+    } finally {
       setIsItemModalOpen(false);
       setScannedRfid(null);
     }
   };
 
-  const handleStockTake = () => {
-    if (selectedItem) {
-      const item = items.find((i) => i.rfid === selectedItem.rfid);
-      if (item) {
-        updateItem(selectedItem.rfid, { quantity: item.quantity + 1 });
-      }
-      setIsActionModalOpen(false);
-      setSelectedItem(null);
-    }
-  };
-
-  const handleStockClear = () => {
-    if (selectedItem) {
-      const item = items.find((i) => i.rfid === selectedItem.rfid);
-      if (item && item.quantity > 0) {
-        updateItem(selectedItem.rfid, { quantity: item.quantity - 1 });
-      }
-      setIsActionModalOpen(false);
-      setSelectedItem(null);
-    }
-  };
-
-  const handleIncrement = (rfid: string) => {
+  // INCREMENT / DECREMENT QUANTITY (optional)
+  const handleIncrement = async (rfid: string) => {
     const item = items.find((i) => i.rfid === rfid);
     if (item) {
-      updateItem(rfid, { quantity: item.quantity + 1 });
+      const newQty = (item.quantity ?? 0) + 1;
+      await updateItem(rfid, { quantity: newQty });
     }
   };
 
-  const handleDecrement = (rfid: string) => {
+  const handleDecrement = async (rfid: string) => {
     const item = items.find((i) => i.rfid === rfid);
-    if (item && item.quantity > 0) {
-      updateItem(rfid, { quantity: item.quantity - 1 });
+    if (item && (item.quantity ?? 0) > 0) {
+      const newQty = Math.max(0, (item.quantity ?? 0) - 1);
+      await updateItem(rfid, { quantity: newQty });
     }
   };
 
@@ -106,7 +100,7 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Scan Section */}
+          {/* SCANNER SECTION */}
           <div className="lg:col-span-1">
             <div className="bg-card border border-border rounded-lg p-6 sticky top-8">
               <h2 className="text-lg font-semibold text-foreground mb-4">Scanner</h2>
@@ -122,31 +116,39 @@ export default function Dashboard() {
                   <div className="flex justify-between">
                     <span className="text-sm text-foreground">Total Quantity</span>
                     <span className="font-semibold text-foreground">
-                      {items.reduce((sum, item) => sum + item.quantity, 0)}
+                      {items.reduce((sum, item) => sum + (item.quantity ?? 0), 0)}
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Admin Staff Table */}
-              {user?.role === "ADMIN" && <AdminStaffTable user={{
-                id: user._id,
-                name: user.name,
-                emailId: user.emailId,
-                role: user.role
-              }} />}
+              {user?.role === "ADMIN" && (
+                <AdminStaffTable
+                  user={{
+                    id: user._id,
+                    name: user.name,
+                    emailId: user.emailId,
+                    role: user.role,
+                  }}
+                />
+              )}
             </div>
           </div>
 
-          {/* Inventory Table */}
+          {/* INVENTORY TABLE */}
           <div className="lg:col-span-2">
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-lg font-semibold text-foreground mb-4">Inventory</h2>
               <InventoryTable
-                items={items}
+                items={items.map((item) => ({
+                  rfid: item.rfid,
+                  name: item.name,
+                  quantity: item.quantity ?? 0,
+                  scannedAt: item.scannedAt ? new Date(item.scannedAt).toISOString() : new Date().toISOString(),
+                }))}
                 onIncrement={handleIncrement}
                 onDecrement={handleDecrement}
-                onDelete={deleteItem}
+                onDelete={deleteItem} // still used for programmatic deletion
                 loading={loading}
               />
             </div>
@@ -154,7 +156,6 @@ export default function Dashboard() {
         </div>
       </main>
 
-      {/* Item Modal */}
       {isItemModalOpen && scannedRfid && (
         <ItemModal
           rfid={scannedRfid}
@@ -167,20 +168,7 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Action Modal */}
-      {isActionModalOpen && selectedItem && (
-        <ActionModal
-          rfid={selectedItem.rfid}
-          itemName={selectedItem.name}
-          onStockTake={handleStockTake}
-          onStockClear={handleStockClear}
-          onClose={() => {
-            setIsActionModalOpen(false);
-            setSelectedItem(null);
-          }}
-          loading={loading}
-        />
-      )}
+      {/* ActionModal NOT NEEDED ANYMORE */}
     </div>
   );
 }

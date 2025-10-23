@@ -1,12 +1,10 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 
 interface ItemModalProps {
   rfid: string
-  onSubmit: (name: string) => void
+  onSubmit: (name: string, itemId: string) => void
   onClose: () => void
   loading?: boolean
 }
@@ -17,7 +15,7 @@ export function ItemModal({ rfid, onSubmit, onClose, loading }: ItemModalProps) 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (name.trim()) {
-      onSubmit(name.trim())
+      onSubmit(name.trim(), rfid) // ✅ Pass both name and RFID to parent
     }
   }
 
@@ -42,7 +40,7 @@ export function ItemModal({ rfid, onSubmit, onClose, loading }: ItemModalProps) 
               Item Name
             </label>
             <input
-              id="name"
+              id="itemName"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}

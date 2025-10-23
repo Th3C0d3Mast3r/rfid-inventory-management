@@ -3,13 +3,17 @@
 interface ActionModalProps {
   rfid: string
   itemName: string
-  onStockTake: () => void
-  onStockClear: () => void
+  onDelete: (rfid: string) => void
   onClose: () => void
   loading?: boolean
 }
 
-export function ActionModal({ rfid, itemName, onStockTake, onStockClear, onClose, loading }: ActionModalProps) {
+export function ActionModal({ rfid, itemName, onDelete, onClose, loading }: ActionModalProps) {
+  const handleCheckout = () => {
+    const confirmDelete = window.confirm(`CHECKOUT ${rfid}?`)
+    if (confirmDelete) onDelete(rfid)
+  }
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-card rounded-lg shadow-lg max-w-sm w-full p-6 border border-border">
@@ -20,18 +24,11 @@ export function ActionModal({ rfid, itemName, onStockTake, onStockClear, onClose
 
         <div className="space-y-3">
           <button
-            onClick={onStockTake}
-            disabled={loading}
-            className="w-full px-4 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            Stock Take (+1)
-          </button>
-          <button
-            onClick={onStockClear}
+            onClick={handleCheckout}
             disabled={loading}
             className="w-full px-4 py-3 bg-destructive text-destructive-foreground rounded-lg font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
-            Stock Clear (-1)
+            Stock Clear (Checkout)
           </button>
           <button
             onClick={onClose}

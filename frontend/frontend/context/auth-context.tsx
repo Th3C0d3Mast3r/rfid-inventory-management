@@ -36,55 +36,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signUp = async ({ name, emailId, password, role }: { name: string; emailId: string; password: string; role: string }) => {
-  try {
-    const response = await fetch("http://localhost:7500/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, emailId, password, role }),
-    });
+    try {
+      const response = await fetch("http://localhost:7500/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, emailId, password, role }),
+      })
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Sign up failed");
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || "Sign up failed")
 
-    // ✅ Your backend sends "employee", not "user"
-    const userData = data.employee;
-    setUser(userData);
-    localStorage.setItem("auth_user", JSON.stringify(userData));
-  } catch (error) {
-    console.error("SignUp error:", error);
-    throw error;
+      const userData = data.employee
+      setUser(userData)
+      localStorage.setItem("auth_user", JSON.stringify(userData))
+    } catch (error) {
+      console.error("SignUp error:", error)
+      throw error
+    }
   }
-};
 
-const signIn = async (emailId: string, password: string): Promise<User> => {
-  try {
-    const response = await fetch("http://localhost:7500/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ emailId, password }),
-    });
+  const signIn = async (emailId: string, password: string): Promise<User> => {
+    try {
+      const response = await fetch("http://localhost:7500/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emailId, password }),
+      })
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || "Sign in failed");
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.error || "Sign in failed")
 
-    // ✅ Map backend employee data correctly
-    const userData: User = {
-      _id: data.employee._id,
-      name: data.employee.name,
-      emailId: data.employee.emailId,
-      role: data.employee.role,
-    };
+      const userData: User = {
+        _id: data.employee._id,
+        name: data.employee.name,
+        emailId: data.employee.emailId,
+        role: data.employee.role,
+      }
 
-    setUser(userData);
-    localStorage.setItem("auth_user", JSON.stringify(userData));
+      setUser(userData)
+      localStorage.setItem("auth_user", JSON.stringify(userData))
 
-    return userData;
-  } catch (error) {
-    console.error("SignIn error:", error);
-    throw error;
+      return userData
+    } catch (error) {
+      console.error("SignIn error:", error)
+      throw error
+    }
   }
-};
-
 
   const signOut = async () => {
     try {

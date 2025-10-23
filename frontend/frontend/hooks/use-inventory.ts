@@ -1,82 +1,138 @@
-"use client"
+// frontend/hooks/use-inventory.ts
+import { useState, useCallback, useEffect } from "react"
+import { useAuth } from "@/context/auth-context"
 
-import { useState, useCallback } from "react"
-import type { InventoryItem } from "@/types/inventory"
+// ✅ Define inventory item type
+export interface InventoryItem {
+  _id?: string
+  rfid: string
+  name: string
+  quantity?: number
+  scannedAt?: string
+  employee?: string
+}
 
 export function useInventory() {
-  const [items, setItems] = useState<InventoryItem[]>([])
+  const { user, loading: authLoading } = useAuth()
+  const [items, setItems] = useState<InventoryItem[]>([]) // ✅ typed array
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Fetch items from backend
   const fetchItems = useCallback(async () => {
-    setLoading(true)
-    setError(null)
-    try {
-      const response = await fetch("/api/inventory/items")
-      if (!response.ok) throw new Error("Failed to fetch items")
-      const data = await response.json()
-      setItems(data.items)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-    } finally {
-      setLoading(false)
-    }
-  }, [])
+  if (authLoading) return // wait until auth ready
+  setLoading(true)
+  try {
+    const res = await fetch("/api/inventory/items")
+    const data: any[] = await res.json() // keep as any to flatten
 
-  const addItem = useCallback(async (rfid: string, name: string) => {
+    // ✅ Flatten itemIDs for frontend
+    const flattened: InventoryItem[] = data.flatMap(inv =>
+      inv.itemIDs.map((id: any) => ({
+        rfid: id.itemId,
+        name: inv.itemName,
+        quantity: id.quantity ?? 1, // default to 1 if quantity missing
+        scannedAt: id.assignedAt,
+        employee: id.employee,
+        _id: id._id,
+      }))
+    )
+
+    setItems(flattened)
+  } catch (err) {
+    console.error("Error fetching items:", err)
+    setError("Failed to load inventory")
+  } finally {
+    setLoading(false)
+  }
+}, [authLoading])
+
+  // Add item to DB
+  const addItem = useCallback(
+  async (itemName: string, itemId: string, emailId: string) => {
+    if (authLoading) {
+      console.log("Auth still loading...");
+      return;
+    }
+
+    if (!emailId) {
+      console.error("Cannot add item: emailId missing");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
     try {
-      const response = await fetch("/api/inventory/items", {
+      const res = await fetch("/api/inventory/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ rfid, name, quantity: 1 }),
-      })
-      if (!response.ok) throw new Error("Failed to add item")
-      const data = await response.json()
-      setItems((prev) => [...prev, data.item])
-      return data.item
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-      throw err
-    }
-  }, [])
+        body: JSON.stringify({ itemName, itemId, emailId }),
+      });
 
-  const updateItem = useCallback(async (rfid: string, updates: Partial<InventoryItem>) => {
-    try {
-      const response = await fetch(`/api/inventory/items/${rfid}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updates),
-      })
-      if (!response.ok) throw new Error("Failed to update item")
-      const data = await response.json()
-      setItems((prev) => prev.map((item) => (item.rfid === rfid ? data.item : item)))
-      return data.item
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-      throw err
-    }
-  }, [])
+      const data: InventoryItem = await res.json();
+      if (!res.ok) throw new Error((data as any).error || "Failed to add item");
 
-  const deleteItem = useCallback(async (rfid: string) => {
-    try {
-      const response = await fetch(`/api/inventory/items/${rfid}`, {
-        method: "DELETE",
-      })
-      if (!response.ok) throw new Error("Failed to delete item")
-      setItems((prev) => prev.filter((item) => item.rfid !== rfid))
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error")
-      throw err
+      console.log("Item added:", data);
+      await fetchItems();
+    } catch (err: any) {
+      console.error("Error adding item:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  }, [])
+  },
+  [authLoading, fetchItems]
+);
 
-  return {
-    items,
-    loading,
-    error,
-    fetchItems,
-    addItem,
-    updateItem,
-    deleteItem,
-  }
+
+  // Update item
+  const updateItem = useCallback(
+    async (itemId: string, updates: Partial<InventoryItem>) => {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(`/api/inventory/items/${itemId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updates),
+        })
+        if (!res.ok) throw new Error("Failed to update item")
+        await fetchItems()
+      } catch (err: any) {
+        console.error("Error updating item:", err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [fetchItems]
+  )
+
+  // Delete item
+  const deleteItem = useCallback(
+    async (itemId: string) => {
+      setLoading(true)
+      setError(null)
+      try {
+        const res = await fetch(`/api/inventory/items/${itemId}`, {
+          method: "DELETE",
+        })
+        if (!res.ok) throw new Error("Failed to delete item")
+        await fetchItems()
+      } catch (err: any) {
+        console.error("Error deleting item:", err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [fetchItems]
+  )
+
+  useEffect(() => {
+    if (!authLoading) fetchItems()
+  }, [authLoading, fetchItems])
+
+  return { items, loading, error, addItem, updateItem, deleteItem, fetchItems }
 }

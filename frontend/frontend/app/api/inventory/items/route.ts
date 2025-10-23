@@ -1,38 +1,34 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 
-// In production, this would query your actual database
-const DUMMY_ITEMS = [
-  { rfid: "RFID001", name: "APSARA PENCIL SET", quantity: 45, scannedAt: new Date().toISOString() },
-  { rfid: "RFID002", name: "NOTEBOOK A4", quantity: 120, scannedAt: new Date().toISOString() },
-]
+const BACKEND_URL = "http://localhost:7500/api/inventory/items"
 
-export async function GET(request: NextRequest) {
+// Fetch all inventory items
+export async function GET() {
   try {
-    // In real backend: fetch from database with user authentication
-    return NextResponse.json({ items: DUMMY_ITEMS }, { status: 200 })
+    const response = await fetch(BACKEND_URL)
+    const data = await response.json()
+    return NextResponse.json(data, { status: response.status })
   } catch (error) {
+    console.error("GET /api/inventory/items failed:", error)
     return NextResponse.json({ error: "Failed to fetch items" }, { status: 500 })
   }
 }
 
+// Add new inventory item
 export async function POST(request: NextRequest) {
   try {
-    const { rfid, name, quantity } = await request.json()
+    const body = await request.json()
 
-    if (!rfid || !name) {
-      return NextResponse.json({ error: "RFID and name required" }, { status: 400 })
-    }
+    const response = await fetch(BACKEND_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
 
-    // In real backend: save to database
-    const newItem = {
-      rfid,
-      name,
-      quantity: quantity || 1,
-      scannedAt: new Date().toISOString(),
-    }
-
-    return NextResponse.json({ item: newItem }, { status: 201 })
+    const data = await response.json()
+    return NextResponse.json(data, { status: response.status })
   } catch (error) {
+    console.error("POST /api/inventory/items failed:", error)
     return NextResponse.json({ error: "Failed to create item" }, { status: 500 })
   }
 }

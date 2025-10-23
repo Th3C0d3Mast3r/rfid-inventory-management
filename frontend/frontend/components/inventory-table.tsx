@@ -1,7 +1,6 @@
 "use client"
 
-import type { InventoryItem } from "@/types/inventory"
-import { Trash2, Plus, Minus } from "lucide-react"
+import type { InventoryItem } from "@/hooks/use-inventory"
 
 interface InventoryTableProps {
   items: InventoryItem[]
@@ -21,55 +20,63 @@ export function InventoryTable({ items, onIncrement, onDecrement, onDelete, load
     )
   }
 
+  // Group items by item name
+  const groupedItems = items.reduce<Record<string, InventoryItem[]>>((acc, item) => {
+    if (!acc[item.name]) acc[item.name] = []
+    acc[item.name].push(item)
+    return acc
+  }, {})
+
   return (
     <div className="overflow-x-auto border border-border rounded-lg">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-border bg-muted/50">
-            <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">RFID</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">Name</th>
+          <tr className="border-b border-border bg-muted/10">
+            <th className="px-4 py-3 text-left text-sm font-semibold text-foreground">Item Name</th>
             <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">Quantity</th>
-            <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">Actions</th>
+            <th className="px-4 py-3 text-center text-sm font-semibold text-foreground">Last Scanned</th>
+            <th className="px-4 py-3 text-right text-sm font-semibold text-foreground">IDs</th>
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => (
-            <tr key={item.rfid} className="border-b border-border hover:bg-muted/30 transition-colors">
-              <td className="px-4 py-3 text-sm font-mono text-foreground">{item.rfid}</td>
-              <td className="px-4 py-3 text-sm text-foreground">{item.name}</td>
-              <td className="px-4 py-3 text-center">
-                <div className="flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => onDecrement(item.rfid)}
-                    disabled={loading || item.quantity <= 0}
-                    className="p-1 hover:bg-muted rounded disabled:opacity-50 transition-colors"
-                    aria-label="Decrease quantity"
-                  >
-                    <Minus className="w-4 h-4 text-foreground" />
-                  </button>
-                  <span className="w-8 text-center font-semibold text-foreground">{item.quantity}</span>
-                  <button
-                    onClick={() => onIncrement(item.rfid)}
-                    disabled={loading}
-                    className="p-1 hover:bg-muted rounded disabled:opacity-50 transition-colors"
-                    aria-label="Increase quantity"
-                  >
-                    <Plus className="w-4 h-4 text-foreground" />
-                  </button>
-                </div>
-              </td>
-              <td className="px-4 py-3 text-right">
-                <button
-                  onClick={() => onDelete(item.rfid)}
-                  disabled={loading}
-                  className="p-1 hover:bg-destructive/10 rounded text-destructive disabled:opacity-50 transition-colors"
-                  aria-label="Delete item"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {Object.entries(groupedItems).map(([name, group]) => {
+            const totalQuantity = group.reduce((sum, item) => sum + (item.quantity ?? 0), 0)
+            const lastScanned = group.reduce((latest, item) => {
+              const scanned = item.scannedAt ? new Date(item.scannedAt) : new Date(0)
+              return scanned > latest ? scanned : latest
+            }, new Date(0))
+
+            return (
+              <tr key={name} className="border-b border-border hover:bg-muted/30 transition-colors">
+                <td className="px-4 py-3 text-sm font-mono text-foreground">{name}</td>
+                <td className="px-4 py-3 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="w-8 text-center font-semibold text-foreground">{totalQuantity}</span>
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-center text-sm text-foreground">
+                  {lastScanned.toLocaleString()}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex flex-wrap justify-end gap-2">
+                    {group.map(item => (
+                      <button
+                        key={item.rfid}
+                        onClick={() => {
+                          const confirmDelete = window.confirm(`Do you wish to REMOVE itemId ${item.rfid}?`)
+                          if (confirmDelete) onDelete(item.rfid)
+                        }}
+                        className="px-2 py-1 bg-muted/30 rounded text-sm font-mono hover:bg-destructive/20 transition-colors"
+                        disabled={loading}
+                      >
+                        {item.rfid}
+                      </button>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </div>

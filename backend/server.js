@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import connectDB from './src/db/database.js';
 import {login, signup, logout} from './src/controllers/authController.js';
 import userRoutes from "./src/routes/userRoutes.js";
+import inventoryRoutes from "./src/routes/inventoryRoutes.js";
 
 dotenv.config();
 
@@ -34,8 +35,11 @@ app.post("/logout", (req, res)=>{
     logout(req, res);
 });
 
+// for the user routes
 app.use("/api", userRoutes);
 
+// for the inventory ka status and the other things
+app.use("/api/inventory", inventoryRoutes);
 
 app.get("/", (req, res)=>{
     res.send("API is working");
