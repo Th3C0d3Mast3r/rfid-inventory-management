@@ -48,3 +48,4 @@ touch .env
 - User activity logs for inventory changes
 - QR code scanning integration
 - IoT device authentication for secure communication
+- OTP based authentication
