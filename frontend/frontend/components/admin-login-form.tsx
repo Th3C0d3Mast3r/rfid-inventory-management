@@ -11,22 +11,12 @@ export function AdminLoginForm() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const { adminSignIn } = useAuth()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
     setLoading(true)
-
-    try {
-      await adminSignIn(username, password)
-      router.push("/admin")
-    } catch (err) {
-      setError("Invalid admin credentials")
-    } finally {
-      setLoading(false)
-    }
   }
 
   return (

@@ -1,35 +1,31 @@
 "use client"
-import { useEffect, useState } from "react"
+import{useState}from"react"
 
-export function ScanInput({ onScan, disabled }: { onScan: (rfid: string) => void; disabled?: boolean }) {
-  const [rfid, setRfid] = useState("")
+interface ScanInputProps{
+  onScan:(rfid:string)=>void
+  disabled?:boolean
+}
 
-  // Poll the backend every 500ms for new scan
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch("/api/scan")
-        const data = await res.json()
-        if (data.uid && data.uid !== rfid) {
-          setRfid(data.uid)
-          onScan(data.uid) // trigger normal scan flow
-        }
-      } catch (err) {
-        console.error("Failed to poll scanned UID:", err)
-      }
-    }, 500)
+export function ScanInput({onScan,disabled}:ScanInputProps){
+  const[value,setValue]=useState("")
 
-    return () => clearInterval(interval)
-  }, [rfid, onScan])
+  const handleKeyDown=(e:React.KeyboardEvent<HTMLInputElement>)=>{
+    if(e.key==="Enter"&&value.trim()){
+      e.preventDefault()
+      onScan(value.trim()) // Trigger scan
+      setValue("") // Reset input
+    }
+  }
 
-  return (
+  return(
     <input
       type="text"
-      value={rfid}
+      placeholder="Scan or type RFID tag"
+      value={value}
+      onChange={e=>setValue(e.target.value)}
+      onKeyDown={handleKeyDown}
       disabled={disabled}
-      placeholder="Scan RFID Tag"
-      className="w-full border rounded p-2"
-      onChange={(e) => setRfid(e.target.value)}
+      className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
     />
   )
 }

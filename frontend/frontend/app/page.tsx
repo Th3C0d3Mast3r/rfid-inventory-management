@@ -7,19 +7,17 @@ import { LoginForm } from "@/components/login-form"
 import { SignUpForm } from "@/components/signup-form"
 
 export default function Home() {
-  const { user, admin, loading } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
   const [isSignUp, setIsSignUp] = useState(false)
 
   useEffect(() => {
     if (!loading) {
-      if (admin) {
-        router.push("/admin")
-      } else if (user) {
+      if (user) {
         router.push("/dashboard")
       }
     }
-  }, [user, admin, loading, router])
+  }, [user, loading, router])
 
   if (loading) {
     return (
