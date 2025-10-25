@@ -9,6 +9,8 @@ import{ScanInput}from"@/components/scan-input"
 import{ItemModal}from"@/components/item-modal"
 import{InventoryTable}from"@/components/inventory-table"
 import AdminStaffTable from "@/components/adminStaffTable"
+import { Footer } from "@/components/footer"
+
 
 export default function Dashboard(){
   const{user,loading:authLoading}=useAuth()
@@ -190,6 +192,7 @@ export default function Dashboard(){
           loading={loading}
         />
       )}
+      <Footer/>
     </div>
   )
 }
