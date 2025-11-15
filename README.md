@@ -27,9 +27,6 @@ Key features:
 The below is the connection that is done on the ESP32 Espressif Board, connected to RFID RC522 Reader
 ![image of hardware connection](./images/Hardware%20Configuration.png)
 
-And, for the code, used in the ESP32-check out:-
-https://pastebin.com/aGmHFaph
-
 ---
 
 ## Features
@@ -42,20 +39,62 @@ https://pastebin.com/aGmHFaph
 ---
 
 ## Getting Started
-1) Clone the repository, make the `.env`:-
+The following repository is sufficient to setup an RFID based inventory management system for a small scale to a medium scale company/org. 
+
+### SYSTEM SPECIFICATIONS [base requirements]
+To run the whole thing perfectly, the below are the base requirements:-
+ 
+-  **DISK:** 1.5 GB minimum | 3–4 GB recommended
+- **RAM:** 2 GB minimum | 4 GB recommended | 8 GB ideal
+- **CPU:** Dual-core minimum | Quad-core recommended
+- **Wi-Fi:** An in-org Wi-Fi is needed using which, the wireless scanning can be done *(with admin access to MAC bind some IP pairs)*
+ 
+Apart from this, the following diagram should be enough to understand what to do when, and what to do after that. Thus, refer the below diagram to understand the setup flow.
+> IMAGE GOES HERE
+
+### CODE SNIPPETS [to make the setup]
+1. If you have base OS of `ubuntu` - a linux distribution, then its good *(as have written a config file for Ubuntu only)* - for windows, its you who has to do all the things manually by searching online *(will provide the resources, dw)*.
 ```bash
+# Clone the repository on your device
 git clone "https://github.com/Th3C0d3Mast3r/rfid-inventory-management.git"
 
-cd backend
-touch .env     # add these there:- PORT=7500, MONGODB_URI, JWT_SECRET
+#  Once cloned, head into the repo
+cd rfid-inventory-management
+./baseConfig.sh
+```
+2.  With having done the above steps, your device is now ready to start the `backend` and `frontend` server. But before that, download all the dependencies
+```bash
+cd frontend/frontend
+npm i
 
-# in backend, as well as in the frontend, do:-
+# now, head to backend directory by doing
+cd ..
+cd ..
+cd backend
 npm i
 ```
+> ⚠ **NOTE:** when `npm i` doesnt work, then, try this:- `npm i --force`
+3.  After this, ensure, your `.env` is well present, and written well. Your `backend/.env` should have:-
+- PORT=7500 
+- MONGODB_URI=mongodb://admin:secret@localhost:27017/rfid?authSource=admin
+- JWT_SECRET=\<yourSecret>
+> **NOTE:** The above mongoDB URI is for docker based mongo running. If you are on windows, add a uri to your localhost machine-and if the db is cloud based, add that URI here. **DO NOT CHANGE THE PORT THO!**
 
-2) Once done-run
-- **BACKEND** → `npx nodemon server.js`
-- **FRONTEND** → `npm run dev`
+Once all this is there, then head on to run the backend and frontend server.
+```bash
+# start the frontend and backend server:-
+npx nodemon server.js    # inside backend directory
+npm run dev              # inside frontend directory
+
+# OR
+
+# type this in the root dir - not in the sub-directory [NOT CONSIDERED GOOD THO]
+./startApp.sh
+```
+4.  Once the `backend` and `frontend` start to run, head on to the web-UI presented, connect the Scanner-and start the monitoring!
+> **DO NOT FLASH THE SCANNER DEVICE WITH ANY OTHER CODE. IF DONE, YOU WILL NEED TO MANUALLY BURN THE CODE AGAIN INTO THAT.**
+
+>In case this happens, then, use the code present in `main.py` and using `thonny` or any other software that allows to burn code into ESP32-Espressif, burn that code into the scanner device *(keep in mind, while self burning, you should keep in mind the SSID and PASSWORD of your organization, along with the device where your interface is there)*
 
 ## Future Enhancements
 - User activity logs for inventory changes
@@ -73,4 +112,7 @@ npm i
 ## Contibuting
 Well, contrbutions are welcome-make a PR, and if the suggested PR works well, and can be included in the coming Versions, will be included, and credits be given in the version history   ;)
 
+---
 **CURRENT CONTRIBUTORS**: @Th3C0d3Mast3r
+
+> Maintained by root owner **@TH3C0d3Mast3r** and protected under **MIT License** 
