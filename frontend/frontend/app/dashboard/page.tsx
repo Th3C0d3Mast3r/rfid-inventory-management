@@ -21,6 +21,12 @@ export default function Dashboard(){
   const[isItemModalOpen,setIsItemModalOpen]=useState(false)
   const[scannerMode,setScannerMode]=useState(false) // false=manual,true=IoT
 
+  // Total distinct items
+  const totalDistinctItems = new Set(items.map(item => item.name)).size
+
+  // Total quantity
+  const totalQuantity = items.reduce((sum, item) => sum + (item.quantity ?? 0), 0)
+
   useEffect(()=>{
     if(!authLoading&&!user)router.push("/")
   },[user,authLoading,router])
@@ -114,13 +120,13 @@ export default function Dashboard(){
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-foreground">Scanner</h2>
                 <label className="flex items-center gap-2 text-sm">
-                  <span>IoT Scanner</span>
-                  <input
+                  <span>SCAN or TYPE - both ON</span>
+                  {/* <input
                     type="checkbox"
                     checked={scannerMode}
                     onChange={e=>setScannerMode(e.target.checked)}
                     className="cursor-pointer accent-primary"
-                  />
+                  /> */}
                 </label>
               </div>
 
@@ -136,13 +142,11 @@ export default function Dashboard(){
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-sm text-foreground">Total Items</span>
-                    <span className="font-semibold text-foreground">{items.length}</span>
+                    <span className="font-semibold text-foreground">{totalDistinctItems}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-foreground">Total Quantity</span>
-                    <span className="font-semibold text-foreground">
-                      {items.reduce((sum,item)=>sum+(item.quantity??0),0)}
-                    </span>
+                    <span className="font-semibold text-foreground">{totalQuantity}</span>
                   </div>
                 </div>
               </div>
