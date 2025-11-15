@@ -48,7 +48,7 @@ To run the whole thing perfectly, the below are the base requirements:-
 - **Wi-Fi:** An in-org Wi-Fi is needed using which, the wireless scanning can be done *(with admin access to MAC bind some IP pairs)*
  
 Apart from this, the following diagram should be enough to understand what to do when, and what to do after that. Thus, refer the below diagram to understand the setup flow.
-> IMAGE GOES HERE
+![image for overall system setup steps](./images/setupProcess.png)
 
 ### CODE SNIPPETS [to make the setup]
 1. If you have base OS of `ubuntu` - a linux distribution, then its good *(as have written a config file for Ubuntu only)* - for windows, its you who has to do all the things manually by searching online *(will provide the resources, dw)*.

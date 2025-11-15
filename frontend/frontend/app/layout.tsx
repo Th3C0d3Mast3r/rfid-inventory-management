@@ -12,8 +12,11 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "IoT Inventory Manager",
   description: "Minimalistic inventory management for IoT devices",
-  generator: "v0.app",
-}
+  icons: {
+    icon: "/ourFavicon.svg",
+  },
+};
+
 
 export default function RootLayout({
   children,
