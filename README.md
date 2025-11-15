@@ -23,8 +23,8 @@ Key features:
 | State Management | React hooks (`useInventory`, `useAuth`) |
 
 
-## Hardware Configuration
-The below is the connection that is done on the ESP32 Espressif Board, connected to RFID RC522 Reader
+## Internal Hardware Configuration [RFID Version]
+The below is the connection that is done on the ESP32 Espressif Board, connected to **RFID RC522** Reader
 ![image of hardware connection](./images/Hardware%20Configuration.png)
 
 ---
@@ -98,9 +98,9 @@ npm run dev              # inside frontend directory
 
 ## Future Enhancements
 - User activity logs for inventory changes
-- QR code scanning integration
+- Compatible code for Barcode Scanner and other Mediums (wirelessly)
 - IoT device authentication for secure communication
-- OTP based authentication
+- OTP based authentication of Users
 
 ## Version History
 
