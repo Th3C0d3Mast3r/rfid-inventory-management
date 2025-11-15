@@ -3,6 +3,7 @@
 # Also, have a static IP for the machine that will be scanning this. So, you do not have to change the IPs inside over and over
 
 # with these things done, the ESP can be directly run! WITHOUT having to open THONNY and making any changes
+# also, you will need to pip install all these. So dont worry, will write a shell script to auto-download these things on your device.
 
 import network
 import urequests
