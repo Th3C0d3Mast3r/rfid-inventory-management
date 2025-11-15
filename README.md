@@ -1,5 +1,4 @@
-[![GitHub Release](https://img.shields.io/github/v/release/Th3C0d3Mast3r/rfid-inventory-management?sort=semver)](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/releases/latest)
-
+![Status](https://img.shields.io/badge/WORKING-green) ![Primary OS](https://img.shields.io/badge/Primary_OS-Ubuntu-orange?logo=ubuntu&logoColor=white) [![version](https://img.shields.io/github/v/tag/Th3C0d3Mast3r/rfid-inventory-management?label=version&sort=semver)](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/tags) ![License](https://img.shields.io/github/license/Th3C0d3Mast3r/rfid-inventory-management?label=License&color=blue)
 # RFID INVENTORY MANAGEMENT SYSTEM
 
 ## Introduction
