@@ -13,7 +13,7 @@ export function Footer(){
         </p>
 
         <div className="flex items-center gap-5 text-sm text-muted-foreground">
-          <Link href="/dashboard" className="hover:text-primary transition-colors">v1.0.0</Link>
+          <Link href="/dashboard" className="hover:text-primary transition-colors">v1.0.1</Link>
           <Link href="https://github.com/Th3C0d3Mast3r/rfid-inventory-management/" className="hover:text-primary transition-colors">base repo</Link>
         </div>
       </div>

@@ -14,13 +14,11 @@ Key features:
 ---
 
 ## Tech Stack
-| Layer | Technology |
-|-------|------------|
-| Frontend | Next.js, React, TypeScript, Tailwind CSS |
-| Backend | Node.js, Express.js, MongoDB (for database) |
-| Authentication | Custom JWT-based auth with context (`auth-context`) |
-| Real-time | WebSocket / REST API (IoT device integration) |
-| State Management | React hooks (`useInventory`, `useAuth`) |
+The base tech-stack used here is:-
+- **FRONTEND:** Next.js
+- **BACKEND:** Express + Node
+- **DATABASE:** MongoDB 
+- **MISCELLANEOUS:** Shell and Python
 
 
 ## Internal Hardware Configuration [RFID Version]
