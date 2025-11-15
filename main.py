@@ -13,8 +13,8 @@ from mfrc522 import MFRC522
 import gc
 
 # --- Wi-Fi Setup ---
-SSID = "Redmi"
-PASSWORD = "chachaMusic"
+SSID = "<YOUR ORGANIZATION'S WIFI SSID>"
+PASSWORD = "<THE PASSWORD OF THAT WIFI>"
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
@@ -36,7 +36,7 @@ spi = SPI(2, baudrate=1000000, polarity=0, phase=0,
 rdr = MFRC522(spi, Pin(cs))
 
 # --- Frontend API URL ---
-FRONTEND_SCAN_URL = "http://192.168.43.127:3000/api/scan"
+FRONTEND_SCAN_URL = "http://<COMPUTER IP WHERE THE WHOLE RUNS - HAVE IP:MAC BINDING DONE ON YOUR ROUTER>:3000/api/scan"
 
 print("\nBring RFID Tag closer...")
 
