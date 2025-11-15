@@ -1,3 +1,5 @@
+[![GitHub Release](https://img.shields.io/github/v/release/Th3C0d3Mast3r/rfid-inventory-management?sort=semver)](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/releases/latest)
+
 # RFID INVENTORY MANAGEMENT SYSTEM
 
 ## Introduction
