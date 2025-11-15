@@ -98,10 +98,10 @@ npm run dev              # inside frontend directory
 >In case this happens, then, use the code present in `main.py` and using `thonny` or any other software that allows to burn code into ESP32-Espressif, burn that code into the scanner device *(keep in mind, while self burning, you should keep in mind the SSID and PASSWORD of your organization, along with the device where your interface is there)*
 
 ## Future Enhancements
-- User activity logs for inventory changes
-- Compatible code for Barcode Scanner and other Mediums (wirelessly)
-- IoT device authentication for secure communication
-- OTP based authentication of Users
+- [ ] User activity logs for inventory changes
+- [ ] Compatible code for Barcode Scanner and other Mediums (wirelessly)
+- [ ] IoT device authentication for secure communication
+- [ ] OTP based authentication of Users
 
 ## Version History
 
@@ -114,6 +114,6 @@ npm run dev              # inside frontend directory
 Well, contrbutions are welcome-make a PR, and if the suggested PR works well, and can be included in the coming Versions, will be included, and credits be given in the version history   ;)
 
 ---
-**CURRENT CONTRIBUTORS**: @Th3C0d3Mast3r
 
-> Maintained by root owner **@TH3C0d3Mast3r** and protected under **MIT License** 
+> 👨‍💻 Built with 💖 by **[@Th3C0d3Mast3r](https://th3c0d3mast3r.github.io/portfolioWebsite/)**
+
