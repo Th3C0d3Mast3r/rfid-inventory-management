@@ -105,7 +105,7 @@ npm run dev              # inside frontend directory
 | Version | Date       | Author | Description / Changes Made                                          | Status      |
 |----------|------------|--------|---------------------------------------------------------------------|--------------|
 | 1.0.0      | 25th October, 2025 | @Th3C0d3Mast3r | Base Frontend-Backend with Database Connectivity  | `Completed` |
-| 1.0.1      | 15th November, 2025 | @Th3C0d3Mast3r | Proper RFID Scan based Inventory Management w/ Manual Override | `In-Progress` |
+| 1.0.1      | 15th November, 2025 | @Th3C0d3Mast3r | Proper RFID Scan based Inventory Management w/ Manual Override | `Completed` |
 
 ## Contibuting
 Well, contrbutions are welcome-make a PR, and if the suggested PR works well, and can be included in the coming Versions, will be included, and credits be given in the version history   ;)
