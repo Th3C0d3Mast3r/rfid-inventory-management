@@ -62,6 +62,14 @@ git clone "https://github.com/Th3C0d3Mast3r/rfid-inventory-management.git"
 #  Once cloned, head into the repo
 cd rfid-inventory-management
 ./baseConfig.sh
+
+# NOTE:- If mongoDB doesn't work on Ubuntu, use docker based things
+
+# if docker not installed, then run this
+sudo apt install docker.io
+
+# if already installed, do:-
+sudo apt run mongo  # will auto-pull an image [try mongo or mongod-test by search first]
 ```
 2.  With having done the above steps, your device is now ready to start the `backend` and `frontend` server. But before that, download all the dependencies
 ```bash
