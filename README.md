@@ -1,3 +1,6 @@
+![Status](https://img.shields.io/badge/WORKING-green) ![Primary OS](https://img.shields.io/badge/Primary_OS-Ubuntu-orange?logo=ubuntu&logoColor=white) [![version](https://img.shields.io/github/v/tag/Th3C0d3Mast3r/rfid-inventory-management?label=version&sort=semver)](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/tags) ![License](https://img.shields.io/github/license/Th3C0d3Mast3r/rfid-inventory-management?label=License&color=blue) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+
+
 # RFID INVENTORY MANAGEMENT SYSTEM
 
 ## Introduction
@@ -59,6 +62,14 @@ git clone "https://github.com/Th3C0d3Mast3r/rfid-inventory-management.git"
 #  Once cloned, head into the repo
 cd rfid-inventory-management
 ./baseConfig.sh
+
+# NOTE:- If mongoDB doesn't work on Ubuntu, use docker based things
+
+# if docker not installed, then run this
+sudo apt install docker.io
+
+# if already installed, do:-
+sudo apt run mongo  # will auto-pull an image [try mongo or mongod-test by search first]
 ```
 2.  With having done the above steps, your device is now ready to start the `backend` and `frontend` server. But before that, download all the dependencies
 ```bash
@@ -95,10 +106,10 @@ npm run dev              # inside frontend directory
 >In case this happens, then, use the code present in `main.py` and using `thonny` or any other software that allows to burn code into ESP32-Espressif, burn that code into the scanner device *(keep in mind, while self burning, you should keep in mind the SSID and PASSWORD of your organization, along with the device where your interface is there)*
 
 ## Future Enhancements
-- User activity logs for inventory changes
-- Compatible code for Barcode Scanner and other Mediums (wirelessly)
-- IoT device authentication for secure communication
-- OTP based authentication of Users
+- [ ] User activity logs for inventory changes
+- [ ] Compatible code for Barcode Scanner and other Mediums (wirelessly)
+- [ ] IoT device authentication for secure communication
+- [ ] OTP based authentication of Users
 
 ## Version History
 
@@ -111,6 +122,6 @@ npm run dev              # inside frontend directory
 Well, contrbutions are welcome-make a PR, and if the suggested PR works well, and can be included in the coming Versions, will be included, and credits be given in the version history   ;)
 
 ---
-**CURRENT CONTRIBUTORS**: @Th3C0d3Mast3r
 
-> Maintained by root owner **@TH3C0d3Mast3r** and protected under **MIT License** 
+> 👨‍💻 Built with 💖 by **[@Th3C0d3Mast3r](https://th3c0d3mast3r.github.io/portfolioWebsite/)**
+
