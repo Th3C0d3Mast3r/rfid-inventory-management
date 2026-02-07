@@ -1,0 +1,71 @@
+# - name: RFID App Health Checks
+#   hosts: localhost
+#   gather_facts: no
+#   connection: local
+
+#   tasks:
+#     - name: Check if MongoDB port 27017 is open
+#       wait_for:
+#         host: localhost
+#         port: 27017
+#         timeout: 5
+#       register: mongo_check
+
+#     - name: Check if Backend port 7500 is open
+#       wait_for:
+#         host: localhost
+#         port: 7500
+#         timeout: 5
+#       register: backend_check
+
+#     - name: Check Backend HTTP endpoint
+#       uri:
+#         url: http://localhost:7500/
+#         status_code: 200
+
+#     - name: Check if Frontend port 3000 is open
+#       wait_for:
+#         host: localhost
+#         port: 3000
+#         timeout: 5
+#       register: frontend_check
+
+#     - name: Check Frontend HTTP endpoint
+#       uri:
+#         url: http://localhost:3000
+#         status_code: 200
+
+
+- name: RFID App Health Checks
+  hosts: localhost
+  gather_facts: no
+  connection: local
+
+  tasks:
+    - name: Check if MongoDB port 27017 is open
+      wait_for:
+        host: mongodb       # use the container name
+        port: 27017
+        timeout: 5
+
+    - name: Check if Backend port 7500 is open
+      wait_for:
+        host: backend       # use the container name
+        port: 7500
+        timeout: 5
+
+    - name: Check Backend HTTP endpoint
+      uri:
+        url: http://backend:7500/
+        status_code: 200
+
+    - name: Check if Frontend port 3000 is open
+      wait_for:
+        host: frontend      # use the container name
+        port: 3000
+        timeout: 5
+
+    - name: Check Frontend HTTP endpoint
+      uri:
+        url: http://frontend:3000/
+        status_code: 200

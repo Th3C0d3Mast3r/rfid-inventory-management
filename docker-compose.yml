@@ -38,6 +38,18 @@ services:
       # - "80:80"     # for development build
     depends_on:
       - backend
+  
+  ansible:
+    image: quay.io/ansible/ansible-runner:latest
+    container_name: ansible
+    volumes:
+      - ./ansible:/ansible
+    working_dir: /ansible
+    entrypoint: ["sleep", "infinity"]
+    depends_on:
+      - mongo
+      - backend
+      - frontend  
 
 volumes:
   mongo_data:

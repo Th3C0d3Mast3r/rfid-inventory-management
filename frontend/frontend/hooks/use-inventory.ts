@@ -23,22 +23,39 @@ export function useInventory() {
   if (authLoading) return // wait until auth ready
   setLoading(true)
   try {
-    const res = await fetch("/api/inventory/items")
-    const data: any[] = await res.json() // keep as any to flatten
+    const res = await fetch("http://localhost:7500/api/inventory/items")
+    // const data: any[] = await res.json() // keep as any to flatten
 
-    // ✅ Flatten itemIDs for frontend
-    const flattened: InventoryItem[] = data.flatMap(inv =>
+    // // ✅ Flatten itemIDs for frontend
+    // const flattened: InventoryItem[] = data.flatMap(inv =>
+    //   inv.itemIDs.map((id: any) => ({
+    //     rfid: id.itemId,
+    //     name: inv.itemName,
+    //     quantity: id.quantity ?? 1, // default to 1 if quantity missing
+    //     scannedAt: id.assignedAt,
+    //     employee: id.employee,
+    //     _id: id._id,
+    //   }))
+    // )
+
+    // setItems(flattened)
+    const data: any = await res.json();
+
+    // If backend returns object with inventory key, wrap in array
+    const itemsArray = Array.isArray(data) ? data : (data.inventory ? [data.inventory] : []);
+
+    const flattened: InventoryItem[] = itemsArray.flatMap(inv =>
       inv.itemIDs.map((id: any) => ({
         rfid: id.itemId,
         name: inv.itemName,
-        quantity: id.quantity ?? 1, // default to 1 if quantity missing
+        quantity: id.quantity ?? 1,
         scannedAt: id.assignedAt,
         employee: id.employee,
         _id: id._id,
       }))
-    )
+    );
 
-    setItems(flattened)
+    setItems(flattened);
   } catch (err) {
     console.error("Error fetching items:", err)
     setError("Failed to load inventory")
@@ -64,7 +81,7 @@ export function useInventory() {
     setError(null);
 
     try {
-      const res = await fetch("/api/inventory/items", {
+      const res = await fetch("http://localhost:7500/api/inventory/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemName, itemId, emailId }),
@@ -92,7 +109,7 @@ export function useInventory() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/inventory/items/${itemId}`, {
+        const res = await fetch(`http://localhost:7500/api/inventory/items/${itemId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates),
@@ -115,7 +132,7 @@ export function useInventory() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`/api/inventory/items/${itemId}`, {
+        const res = await fetch(`http://localhost:7500/api/inventory/items/${itemId}`, {
           method: "DELETE",
         })
         if (!res.ok) throw new Error("Failed to delete item")
