@@ -106,6 +106,8 @@ npm run dev              # inside frontend directory
 
 >In case this happens, then, use the code present in `main.py` and using `thonny` or any other software that allows to burn code into ESP32-Espressif, burn that code into the scanner device *(keep in mind, while self burning, you should keep in mind the SSID and PASSWORD of your organization, along with the device where your interface is there)*
 
+> Also, if you are using the containerized version of the app, that is present in the [dockerized branch](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/tree/dockerized), then, see to it, there is `docker` present in your system. If not, then GPT it, how to get the proper docker on your Linux which has `cli` support and even `docker compose`. For more details, read the README of [dockerized branch](https://github.com/Th3C0d3Mast3r/rfid-inventory-management/tree/dockerized)
+
 ## Future Enhancements
 - [ ] User activity logs for inventory changes
 - [ ] Compatible code for Barcode Scanner and other Mediums (wirelessly)
@@ -118,6 +120,7 @@ npm run dev              # inside frontend directory
 |----------|------------|--------|---------------------------------------------------------------------|--------------|
 | 1.0.0      | 25th October, 2025 | @Th3C0d3Mast3r | Base Frontend-Backend with Database Connectivity  | `Completed` |
 | 1.0.1      | 15th November, 2025 | @Th3C0d3Mast3r | Proper RFID Scan based Inventory Management w/ Manual Override | `Completed` |
+| 1.0.1.1    | 7th February, 2026  | @Th3C0d3Mast3r | Dockerized Version of the whole software, for easy to start [single container yet to push to docker hub] | `ALMOST DONE` |
 
 ## Contributing
 Well, contrbutions are welcome-make a PR, and if the suggested PR works well, and can be included in the coming Versions, will be included, and credits be given in the version history   ;)
