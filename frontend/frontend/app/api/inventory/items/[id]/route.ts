@@ -1,7 +1,7 @@
 // frontend/app/api/inventory/items/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = "http://localhost:7500/api/inventory/items";
+const BACKEND_URL = "http://172.18.3.3:7500/api/inventory/items";
 
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {

@@ -23,7 +23,7 @@ export function useInventory() {
   if (authLoading) return // wait until auth ready
   setLoading(true)
   try {
-    const res = await fetch("http://localhost:7500/api/inventory/items")
+    const res = await fetch("http://172.18.3.3:7500/api/inventory/items")
     // const data: any[] = await res.json() // keep as any to flatten
 
     // // ✅ Flatten itemIDs for frontend
@@ -81,7 +81,7 @@ export function useInventory() {
     setError(null);
 
     try {
-      const res = await fetch("http://localhost:7500/api/inventory/items", {
+      const res = await fetch("http://172.18.3.3:7500/api/inventory/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemName, itemId, emailId }),
@@ -109,7 +109,7 @@ export function useInventory() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`http://localhost:7500/api/inventory/items/${itemId}`, {
+        const res = await fetch(`http://172.18.3.3:7500/api/inventory/items/${itemId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(updates),
@@ -132,7 +132,7 @@ export function useInventory() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`http://localhost:7500/api/inventory/items/${itemId}`, {
+        const res = await fetch(`http://172.18.3.3:7500/api/inventory/items/${itemId}`, {
           method: "DELETE",
         })
         if (!res.ok) throw new Error("Failed to delete item")

@@ -37,7 +37,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async ({ name, emailId, password, role }: { name: string; emailId: string; password: string; role: string }) => {
     try {
-      const response = await fetch("http://localhost:7500/signup", {
+      const response = await fetch("http://172.18.3.3:7500/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, emailId, password, role }),
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (emailId: string, password: string): Promise<User> => {
     try {
-      const response = await fetch("http://localhost:7500/login", {
+      const response = await fetch("http://172.18.3.3:7500/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ emailId, password }),
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      await fetch("http://localhost:7500/logout", { method: "POST" })
+      await fetch("http://172.18.3.3:7500/logout", { method: "POST" })
       setUser(null)
       localStorage.removeItem("auth_user")
     } catch (error) {

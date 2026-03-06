@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 
-const BACKEND_URL = "http://localhost:7500/api/inventory/items"
+const BACKEND_URL = "http://172.18.3.3:7500/api/inventory/items"
 
 // Fetch all inventory items
 export async function GET() {

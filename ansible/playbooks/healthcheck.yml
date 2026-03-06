@@ -20,7 +20,7 @@
 
 #     - name: Check Backend HTTP endpoint
 #       uri:
-#         url: http://localhost:7500/
+#         url: http://172.18.3.3:7500/
 #         status_code: 200
 
 #     - name: Check if Frontend port 3000 is open
@@ -56,7 +56,7 @@
 
     - name: Check Backend HTTP endpoint
       uri:
-        url: http://localhost:7500/
+        url: http://172.18.3.3:7500/
         status_code: 200
 
     - name: Check if Frontend port 3000 is open

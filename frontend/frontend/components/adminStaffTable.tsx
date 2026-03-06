@@ -32,7 +32,7 @@ const AdminStaffTable: React.FC<AdminStaffTableProps> = ({ user }) => {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:7500/api/users");
+      const res = await fetch("http://172.18.3.3:7500/api/users");
       if (!res.ok) throw new Error("Failed to load staff");
       const data: Staff[] = await res.json();
       const staffList = data.filter((staffUser) => staffUser.role !== "ADMIN");
@@ -50,7 +50,7 @@ const AdminStaffTable: React.FC<AdminStaffTableProps> = ({ user }) => {
     if (!confirmDelete) return;
 
     try {
-      const res = await fetch(`http://localhost:7500/api/users/${id}`, { method: "DELETE" });
+      const res = await fetch(`http://172.18.3.3:7500/api/users/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Failed to remove user");
       setStaff((prevStaff) => prevStaff.filter((staffUser) => staffUser._id !== id));
       alert("User removed successfully");
